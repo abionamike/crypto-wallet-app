@@ -22,7 +22,7 @@ export const getHoldings = (
     const ids = holdings.map((item) => (item.id)).join(',')
 
     const res = await axios.get(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=${orderBy}&per_page=${perPage}&page=${page}&sparkline=${sparkline}&price_change_percentage=${priceChangePerc}&ids=${ids}`);
-    console.log("holding", res.data)
+    // console.log("holding", res.data)
     if(res.status === 200) {
       // Massage data
       const myHoldings = res.data.map(item => {
