@@ -22,10 +22,94 @@ const Chart = ({ containerStyle, chartPrices }) => {
 
   const points = monotoneCubicInterpolation({ data, range: 40 });
 
+  const formatUSD = (value) => {
+    'worklet';
+
+    if(value === '') {
+      return '';
+    }
+
+    return `$${Number(value).toFixed(2)}`
+  }
+
+  const formatDataTime = (value) => {
+    'worklet';
+
+    if(value === '') {
+      return '';
+    }
+
+    const selectedDate = new Date(value * 1000) ;
+
+    const date = `0${selectedDate.getDate()}`.slice(-2);
+    const month = `0${selectedDate.getMonth() + 1}`.slice(-2);
+
+    return `${date} / ${month}`
+  }
+
+  const formatNumber = (value, roundingPoint) => {
+    if(value > 1e9) {
+      return `${(value / 1e9).toFixed(roundingPoint)}B`
+    } else if (value > 1e6) {
+      return `${(value / 1e6).toFixed(roundingPoint)}M`
+    } else if (value > 1e3) {
+      return `${(value / 1e3).toFixed(roundingPoint)}K`
+    } else {
+      return value.toFixed(roundingPoint)
+    }
+  }
+
+  const getYAxisLabelValue = () => {
+    if(chartPrices != undefined) {
+      const minValue = Math.min(...chartPrices);
+      const maxValue  = Math.max(...chartPrices);
+
+      const midValue = (minValue + maxValue) / 2;
+
+      const higherMidValue = (maxValue + midValue) / 2;
+      const lowerMidValue = (minValue + midValue) / 2;
+
+      const roundingPoint = 2;
+
+      return [
+        formatNumber(maxValue, roundingPoint),
+        formatNumber(higherMidValue, roundingPoint),
+        formatNumber(lowerMidValue, roundingPoint),
+        formatNumber(minValue, roundingPoint)
+      ]
+    } else {
+      return []
+    }
+  }
+
   return (
     <View
       style={{ ...containerStyle }}
     >
+      {/* Y - Axis Label */}
+      <View
+        style={{
+          position: 'absolute',
+          left: SIZES.padding,
+          top: 0,
+          bottom: 0,
+          justifyContent: 'space-between'
+        }}
+      >
+        {/* getY-Axis Label Values */}
+        {getYAxisLabelValue().map((item, index) => (
+          <Text
+            key={index}
+            style={{
+              color: COLORS.lightGray3,
+              ...FONTS.body4,
+            }}
+          >
+            {item}
+          </Text>
+        ))}
+      </View>
+
       {/* Chart */}
       {data.length > 0 &&
         <ChartPathProvider
@@ -40,6 +124,59 @@ const Chart = ({ containerStyle, chartPrices }) => {
             stroke={COLORS.lightGreen}
             strokeWidth={2}
           />
+          <ChartDot>
+            <View 
+              style={{
+                position: 'absolute',
+                alignItems: 'center',
+                left: -35,
+                width: 80,
+                backgroundColor: COLORS.transparentBlack1
+              }}
+            >
+              {/* Dot */}
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: 25,
+                  height: 25,
+                  borderRadius: 15,
+                  backgroundColor: COLORS.white 
+                }}
+              >
+                <View
+                  style={{
+                    width: 15,
+                    height: 15,
+                    borderRadius: 10,
+                    backgroundColor: COLORS.lightGreen
+                  }}
+                />
+              </View>
+              {/* Y -Label */}
+
+              <ChartYLabel 
+                format={formatUSD}
+                style={{
+                  color: COLORS.white,
+                  ...FONTS.body5
+                }}
+              />
+
+              {/* X - Label */}
+
+              <ChartXLabel 
+                format={formatDataTime}
+                style={{
+                  marginTop: 3,
+                  color: COLORS.lightGray3,
+                  ...FONTS.body5,
+                  lineHeight: 15,
+                }}
+              />
+            </View>
+          </ChartDot>
         </ChartPathProvider>
       }
        {/* <Text style={{ color: COLORS.white }}>Chart</Text> */}
