@@ -29,7 +29,6 @@ const Home = () => {
     const totalWallet = myHoldings.reduce((a, b) => a + (b.total || 0), 0);
     const valueChange = myHoldings.reduce((a, b) => a + (b.holding_value_change_7d || 0), 0)
     const percChange = valueChange / (totalWallet - valueChange) * 200;
-    console.log(coins[0]?.sparkline_in_7d?.price);
 
     const renderWalletInfoSection = () => {
         return (
